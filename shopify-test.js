@@ -1,6 +1,8 @@
 // Selenium WebDriver test for Shopify site
 import { Builder, By, Key, until } from "selenium-webdriver"
 import chrome from "selenium-webdriver/chrome.js"
+import { CartDrawerHandler } from "./cart-drawer-handler.js"
+import { waitForElement, safeClick, fillField, takeScreenshot } from "./utils/helpers.js"
 
 async function runShopifyTest() {
   // Set up Chrome options
@@ -10,6 +12,7 @@ async function runShopifyTest() {
 
   // Initialize the WebDriver
   const driver = await new Builder().forBrowser("chrome").setChromeOptions(options).build()
+  const cartHandler = new CartDrawerHandler(driver)
 
   try {
     console.log("Starting Shopify test...")
@@ -88,87 +91,141 @@ async function runShopifyTest() {
     await driver.wait(until.elementLocated(By.css(".cart-notification, .cart-drawer, .cart-popup")), 10000)
     console.log("Product added to cart")
 
-    // Test Case 4: Checkout process
-    console.log("Test Case 4: Proceeding to checkout")
+    // Handle cart drawer
+        const checkoutSuccess = await cartHandler.clickCheckoutInDrawer()
+    
+        if (!checkoutSuccess) {
+          console.log("Cart drawer method failed, trying alternative...")
+    
+          // Try clicking cart icon to open drawer/cart
+          await safeClick(driver, ".cart-icon, .header__cart")
+          await driver.sleep(2000)
+    
+          // Try again with cart drawer
+          const secondAttempt = await cartHandler.clickCheckoutInDrawer()
+    
+          if (!secondAttempt) {
+            // Fallback to traditional checkout
+            await safeClick(driver, '.cart__checkout, a[href*="checkout"]')
+          }
+        }
+    
+        // Wait for checkout page
+        //await waitForElement(driver, "#checkout_email, #checkout_shipping_address_first_name", 15000)
+        //console.log("Checkout page loaded successfully")
+
+    //close popup 
+    
+    //const closeButton = await driver.wait(until.elementLocated(By.css('.drawer_close')), 10000);
+    //await closeButton.click();
+    // Test Case 3: Checkout process
+    console.log("Test Case 3: Proceeding to checkout")
+
+    //checkout  tu cart drawer
+    //const checkoutcart = await driver.findElement(By.css('button[name="checkout"]'))
+    //await checkoutcart.click()
+
+    //login từ cart drawer
+    await driver.wait(until.elementLocated(By.css(".content-for-layout, .login")), 10000)
+    console.log("login page loaded")
+
+    const sendemail = await driver.findElement(By.css("form input[name='customer[email]']"));
+    sendemail.sendKeys("ngakn64@gmail.com")
+
+    const sendpw = await driver.findElement(By.css("form input[name='customer[password]']")); 
+    sendpw.sendKeys("Bss123@#", Key.RETURN)
+
+    console.log("Login successfully");
+
+    //checkout 
+    //wait checkoutpage to load
+    await driver.wait(until.elementLocated(By.css(".content-for-layout, .djSdi")), 10000)
+    console.log("checkout page loaded")
+
+    // Wait for redirect
+    //await driver.sleep(3000)
+    //console.log("login page loaded")
 
     // Go to cart page or checkout directly
-    const checkoutButton = await driver.findElement(
-      By.css('.cart__checkout, a[href*="checkout"], button[name="checkout"]'),
-    )
+    const checkoutButton = await driver.findElement( By.id('checkout-pay-button'),4000);
     await checkoutButton.click()
+    await driver.sleep(2000)
 
-    // Wait for checkout page to load
-    await driver.wait(until.elementLocated(By.css("#checkout_email, #checkout_shipping_address_first_name")), 15000)
-    console.log("Checkout page loaded")
+    //Go to cart page
+    const gotocart = await driver.findElement( By.id('cart-link'),4000);
+    await gotocart.click()
+    
+    //Cart page 
+    const product2 = driver.findElement(By.id('Slide-template--24678434472230__featured-collection-2'))
+    await product2.click()
 
-    // Fill in customer information (email)
-    const emailField = await driver.findElement(By.css("#checkout_email, #email"))
-    await emailField.sendkeys("test@example.com")
+    // Wait for product page to load
+    await driver.wait(until.elementLocated(By.css(".content-for-layout, product-info")), 10000)
+    console.log("Product page loaded")
 
+    //change variant + qty
+    //const blackVariant = await driver.findElement(By.css('label[for="template--24678434832768__main-1-1"]'));
+    //await blackVariant.click();
+
+    //const quantityInput = await driver.findElement(By.name('quantity'));
+    //await quantityInput.clear();  // Xóa giá trị hiện tại
+   // await quantityInput.sendKeys('3');  // Nhập số lượng mới
+
+    const addToCartButton1 = await driver.findElement(By.css('button[name="add"], .add-to-cart'))
+    await addToCartButton1.click()
+
+    await driver.wait(until.elementLocated(By.css(".cart-notification, .cart-drawer, .cart-popup")), 10000)
+    console.log("Product added to cart")
+
+    await driver.sleep(2000)
+
+    const close = await driver.findElement(By.css('.drawer__close'))
+    await close.click()
+    await driver.sleep(2000)
+
+    //Go to cart drawer // sau nay sua thanh cart page
+    const gocart = await driver.findElement(By.id('cart-icon-bubble'))
+    await gocart.click();
+    await driver.sleep(3000)
+
+    // go checkout page
+    const checkout = await driver.findElement(By.id('CartDrawer-Checkout'));
+    await checkout.click();
+
+    // đang bắt login mới được checkout
+    await driver.sleep(5000)
     // Fill in shipping information if on the first step
     try {
-      const firstNameField = await driver.findElement(By.css("#checkout_shipping_address_first_name"))
+      const firstNameField = await driver.findElement(By.id('TextField0'))
       await firstNameField.sendKeys("Test")
 
-      const lastNameField = await driver.findElement(By.css("#checkout_shipping_address_last_name"))
+      const lastNameField = await driver.findElement(By.id('TextField1'))
       await lastNameField.sendKeys("User")
 
-      const addressField = await driver.findElement(By.css("#checkout_shipping_address_address1"))
+      const addressField = await driver.findElement(By.id("TextField2"))
       await addressField.sendKeys("123 Test Street")
 
-      const cityField = await driver.findElement(By.css("#checkout_shipping_address_city"))
+      const cityField = await driver.findElement(By.id("TextField4"))
       await cityField.sendKeys("Test City")
 
-      const zipField = await driver.findElement(By.css("#checkout_shipping_address_zip"))
-      await zipField.sendKeys("12345")
+      await driver.sleep(5000)
 
-      // Select country if dropdown exists
-      try {
-        const countrySelect = await driver.findElement(By.css("#checkout_shipping_address_country"))
-        await countrySelect.click()
-        const countryOption = await driver.findElement(By.css('option[value="US"]'))
-        await countryOption.click()
 
-        // Wait for province/state field to be populated
-        await driver.sleep(1000)
+      // Payment= "COD" //devsite k dùng đc COD
+      // const codRadioButton = await driver.findElement(By.id('basic-paymentOnDelivery'));
+      // await codRadioButton.click();
+      // await driver.sleep(5000)
 
-        // Select state/province
-        const provinceSelect = await driver.findElement(By.css("#checkout_shipping_address_province"))
-        await provinceSelect.click()
-        const provinceOption = await driver.findElement(
-          By.css("#checkout_shipping_address_province option:nth-child(2)"),
-        )
-        await provinceOption.click()
-      } catch (error) {
-        console.log("Country/province selection not available or already selected")
-      }
+      // const checkoutSuccess = await driver.findElement(By.id('checkout-pay-button'));
+      // await checkoutSuccess.click();
 
-      const phoneField = await driver.findElement(By.css("#checkout_shipping_address_phone"))
-      await phoneField.sendKeys("1234567890")
+      //Payment = credit Card
+      const card_number = await driver.findElement(By.id('number'));
+      await card_number.sendKeys("1");
 
-      console.log("Shipping information filled")
-    } catch (error) {
-      console.log("Already on email step or shipping information not required at this stage")
-    }
 
-    // Continue to next step (shipping method)
-    try {
-      const continueButton = await driver.findElement(
-        By.css('button[type="submit"][id*="continue"], .step__footer__continue-btn'),
-      )
-      await continueButton.click()
-      console.log("Continued to shipping method")
 
-      // Wait for shipping method page to load
-      await driver.wait(until.elementLocated(By.css(".section--shipping-method")), 10000)
 
-      // Select shipping method (usually first one is selected by default)
-      // Continue to payment method
-      const continueToPaymentButton = await driver.findElement(
-        By.css('button[type="submit"][id*="continue"], .step__footer__continue-btn'),
-      )
-      await continueToPaymentButton.click()
-      console.log("Continued to payment method")
 
       // Note: We'll stop here before entering actual payment details
       console.log("Test completed successfully up to payment information")
