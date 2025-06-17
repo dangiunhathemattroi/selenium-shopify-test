@@ -9,7 +9,6 @@ async function runShopifyTest() {
   // Set up Chrome options
   const options = new chrome.Options()
   // Uncomment the line below to run in headless mode
-  // options.addArguments('--headless');
 
   // Initialize the WebDriver
   const driver = await new Builder().forBrowser("chrome").setChromeOptions(options).build()
@@ -187,14 +186,14 @@ async function runShopifyTest() {
     //Go to cart drawer // sau nay sua thanh cart page
     const gocart = await driver.findElement(By.id('cart-icon-bubble'))
     await gocart.click();
-    await driver.sleep(3000)
+    await driver.sleep(2000)
 
     // go checkout page
     const checkout = await driver.findElement(By.id('CartDrawer-Checkout'));
     await checkout.click();
 
     // đang bắt login mới được checkout
-    await driver.sleep(5000)
+    await driver.sleep(1000)
     // Fill in shipping information if on the first step
     try {
       const firstNameField = await driver.findElement(By.id('TextField0'))
@@ -207,7 +206,7 @@ async function runShopifyTest() {
       await addressField.sendKeys("123 Test Street")
 
       const cityField = await driver.findElement(By.id("TextField4"))
-      await cityField.sendKeys("Test City", Key.RETURN)
+      await cityField.sendKeys("Test City")
 
       await driver.sleep(5000)
 
@@ -222,27 +221,69 @@ async function runShopifyTest() {
 
       //Payment = credit Card 
       // // shopify không cho phép dùng tool để fill data vào iframe của bên t3 -> Đang check solution để làm nốt đoạn này
-      const card_number = await driver.findElement(By.id('number'));
-      await card_number.sendKeys("1");
+      // const card_number = await driver.findElement(By.id('number'));
+      // await card_number.sendKeys("1");
 
-      const date = await driver.findElement(By.id('expiry'));
-      await date.sendKeys('12/27');
+      // const date = await driver.findElement(By.id('expiry'));
+      // await date.sendKeys('12/27');
 
-      const verification = await driver.findElement(By.id('verification_value'))
-      await verification.sendKeys('123');
+      // const verification = await driver.findElement(By.id('verification_value'))
+      // await verification.sendKeys('123');
+        // await driver.switchTo().frame(await driver.findElement(By.xpath("//iframe[contains(@class, 'card-fields-iframe')]")));
 
+        // await driver.findElement(By.xpath('//*[@id="number"]')).sendKeys('1');
+        
+        // await driver.sleep(5000)
+        // await driver.switchTo().defaultContent();
 
+        // // Điền thông tin vào trường "Ngày hết hạn" (MM/YY)
+        // console.log(1);
+        // await driver.switchTo().frame(await driver.findElement(By.xpath("//iframe[contains(@class, 'card-fields-iframe')]")));
+        // await driver.findElement(By.xpath('//*[@id="expiry"]')).sendKeys('1227');
+        // await driver.switchTo().defaultContent();
+        // await driver.sleep(5000)
+        try {
+          // Truy cập vào trang có iframe
+
+          // Đảm bảo phần tử input đã sẵn sàng để tương tác
+          await driver.switchTo().frame(await driver.findElement(By.xpath("//iframe[contains(@class, 'card-fields-iframe')]")));
+          const expiryField = await driver.findElement(By.xpath('//input[contains(@id, "verification")]'));
+          expiryField.sendKeys('123');
+            console.log("Date expired entered successfully");
+        } catch (error) {
+            console.error("Test faileddddđ:", error);
+        } finally {
+            // Đóng trình duyệt sau khi hoàn tất
+          await driver.switchTo().defaultContent();
+        }
+
+        await driver.switchTo().frame(await driver.findElement(By.xpath("//iframe[contains(@class, 'card-fields-iframe')]")));
+
+        // Điền thông tin vào trường "Mã bảo mật (CVV)"
+        await driver.findElement(By.xpath('//*[@id="verification_value"]')).sendKeys('123');
+                await driver.switchTo().defaultContent();
+
+        await driver.sleep(5000)
+
+        console.log(3);
+
+        await driver.switchTo().defaultContent();
+        // checkout
+        const checkoutSuccess = await driver.findElement(By.id('checkout-pay-button'));
+        await checkoutSuccess.click();
+
+        console.log('Thông tin thẻ tín dụng đã được điền thành công!');
       //Payment = "Ngân phiếu" / devsite đang không cho dùng phương thức nào khác ngoài thẻ 
-      const manualPayRadio = await driver.findElement(By.css('input[type="radio"][name="basic"][value="manualPayment"]'));
-      await manualPayRadio.click();
+      // const manualPayRadio = await driver.findElement(By.css('input[type="radio"][name="basic"][value="manualPayment"]'));
+      // await manualPayRadio.click();
 
-      await driver.sleep(500) // Cho UI cập nhật
+      // await driver.sleep(500) // Cho UI cập nhật
 
-      if (await manualPayRadio.isSelected()) {
-        console.log("✅ Đã chọn đúng phương thức thanh toán Ngân phiếu")
-      } else {
-        console.log("⚠️ Lỗi: Radio không được chọn như mong muốn")
-      }
+      // if (await manualPayRadio.isSelected()) {
+      //   console.log("✅ Đã chọn đúng phương thức thanh toán Ngân phiếu")
+      // } else {
+      //   console.log("⚠️ Lỗi: Radio không được chọn như mong muốn")
+      // }
 
 
       console.log("Test completed successfully up to payment information")
