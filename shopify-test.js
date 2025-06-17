@@ -4,6 +4,7 @@ import chrome from "selenium-webdriver/chrome.js"
 import { CartDrawerHandler } from "./cart-drawer-handler.js"
 import { waitForElement, safeClick, fillField, takeScreenshot } from "./utils/helpers.js"
 
+
 async function runShopifyTest() {
   // Set up Chrome options
   const options = new chrome.Options()
@@ -58,26 +59,26 @@ async function runShopifyTest() {
       const variantSelectors = await driver.findElements(
         By.css("variant-selects label"))
 
-        for (let i = 0; i < variantSelectors.length; i++) {
-            if (i === 2) {
-                const variant = variantSelectors[i];
-        
-                // Scroll to the button
-                await driver.executeScript("arguments[0].scrollIntoView({block: 'center'});", variant);
-                await driver.sleep(300);
-    
-                // Try normal click
-                try {
-                    await variant.click();
-                } catch (err) {
-                    // Fallback if intercepted
-                    console.warn("Click intercepted, fallback to JS click");
-                    await driver.executeScript("arguments[0].click();", variant);
-                }
-        
-                break;
-            }
+      for (let i = 0; i < variantSelectors.length; i++) {
+        if (i === 2) {
+          const variant = variantSelectors[i];
+
+          // Scroll to the button
+          await driver.executeScript("arguments[0].scrollIntoView({block: 'center'});", variant);
+          await driver.sleep(300);
+
+          // Try normal click
+          try {
+            await variant.click();
+          } catch (err) {
+            // Fallback if intercepted
+            console.warn("Click intercepted, fallback to JS click");
+            await driver.executeScript("arguments[0].click();", variant);
+          }
+
+          break;
         }
+      }
       console.log("Selected product variant")
     } catch (error) {
       console.log("No product variants available or not found")
@@ -92,30 +93,30 @@ async function runShopifyTest() {
     console.log("Product added to cart")
 
     // Handle cart drawer
-        const checkoutSuccess = await cartHandler.clickCheckoutInDrawer()
-    
-        if (!checkoutSuccess) {
-          console.log("Cart drawer method failed, trying alternative...")
-    
-          // Try clicking cart icon to open drawer/cart
-          await safeClick(driver, ".cart-icon, .header__cart")
-          await driver.sleep(2000)
-    
-          // Try again with cart drawer
-          const secondAttempt = await cartHandler.clickCheckoutInDrawer()
-    
-          if (!secondAttempt) {
-            // Fallback to traditional checkout
-            await safeClick(driver, '.cart__checkout, a[href*="checkout"]')
-          }
-        }
-    
-        // Wait for checkout page
-        //await waitForElement(driver, "#checkout_email, #checkout_shipping_address_first_name", 15000)
-        //console.log("Checkout page loaded successfully")
+    const checkoutSuccess = await cartHandler.clickCheckoutInDrawer()
+
+    if (!checkoutSuccess) {
+      console.log("Cart drawer method failed, trying alternative...")
+
+      // Try clicking cart icon to open drawer/cart
+      await safeClick(driver, ".cart-icon, .header__cart")
+      await driver.sleep(2000)
+
+      // Try again with cart drawer
+      const secondAttempt = await cartHandler.clickCheckoutInDrawer()
+
+      if (!secondAttempt) {
+        // Fallback to traditional checkout
+        await safeClick(driver, '.cart__checkout, a[href*="checkout"]')
+      }
+    }
+
+    // Wait for checkout page
+    //await waitForElement(driver, "#checkout_email, #checkout_shipping_address_first_name", 15000)
+    //console.log("Checkout page loaded successfully")
 
     //close popup 
-    
+
     //const closeButton = await driver.wait(until.elementLocated(By.css('.drawer_close')), 10000);
     //await closeButton.click();
     // Test Case 3: Checkout process
@@ -132,7 +133,7 @@ async function runShopifyTest() {
     const sendemail = await driver.findElement(By.css("form input[name='customer[email]']"));
     sendemail.sendKeys("ngakn64@gmail.com")
 
-    const sendpw = await driver.findElement(By.css("form input[name='customer[password]']")); 
+    const sendpw = await driver.findElement(By.css("form input[name='customer[password]']"));
     sendpw.sendKeys("Bss123@#", Key.RETURN)
 
     console.log("Login successfully");
@@ -147,14 +148,14 @@ async function runShopifyTest() {
     //console.log("login page loaded")
 
     // Go to cart page or checkout directly
-    const checkoutButton = await driver.findElement( By.id('checkout-pay-button'),4000);
+    const checkoutButton = await driver.findElement(By.id('checkout-pay-button'), 4000);
     await checkoutButton.click()
     await driver.sleep(2000)
 
     //Go to cart page
-    const gotocart = await driver.findElement( By.id('cart-link'),4000);
+    const gotocart = await driver.findElement(By.id('cart-link'), 4000);
     await gotocart.click()
-    
+
     //Cart page 
     const product2 = driver.findElement(By.id('Slide-template--24678434472230__featured-collection-2'))
     await product2.click()
@@ -169,7 +170,7 @@ async function runShopifyTest() {
 
     //const quantityInput = await driver.findElement(By.name('quantity'));
     //await quantityInput.clear();  // Xóa giá trị hiện tại
-   // await quantityInput.sendKeys('3');  // Nhập số lượng mới
+    // await quantityInput.sendKeys('3');  // Nhập số lượng mới
 
     const addToCartButton1 = await driver.findElement(By.css('button[name="add"], .add-to-cart'))
     await addToCartButton1.click()
@@ -206,7 +207,7 @@ async function runShopifyTest() {
       await addressField.sendKeys("123 Test Street")
 
       const cityField = await driver.findElement(By.id("TextField4"))
-      await cityField.sendKeys("Test City")
+      await cityField.sendKeys("Test City", Key.RETURN)
 
       await driver.sleep(5000)
 
@@ -219,31 +220,43 @@ async function runShopifyTest() {
       // const checkoutSuccess = await driver.findElement(By.id('checkout-pay-button'));
       // await checkoutSuccess.click();
 
-      //Payment = credit Card
+      //Payment = credit Card 
+      // // shopify không cho phép dùng tool để fill data vào iframe của bên t3 -> Đang check solution để làm nốt đoạn này
       const card_number = await driver.findElement(By.id('number'));
       await card_number.sendKeys("1");
 
+      const date = await driver.findElement(By.id('expiry'));
+      await date.sendKeys('12/27');
+
+      const verification = await driver.findElement(By.id('verification_value'))
+      await verification.sendKeys('123');
 
 
+      //Payment = "Ngân phiếu" / devsite đang không cho dùng phương thức nào khác ngoài thẻ 
+      const manualPayRadio = await driver.findElement(By.css('input[type="radio"][name="basic"][value="manualPayment"]'));
+      await manualPayRadio.click();
+
+      await driver.sleep(500) // Cho UI cập nhật
+
+      if (await manualPayRadio.isSelected()) {
+        console.log("✅ Đã chọn đúng phương thức thanh toán Ngân phiếu")
+      } else {
+        console.log("⚠️ Lỗi: Radio không được chọn như mong muốn")
+      }
 
 
-      // Note: We'll stop here before entering actual payment details
       console.log("Test completed successfully up to payment information")
-    } catch (error) {
-      console.log("Could not proceed to shipping/payment: ", error.message)
     }
+    catch (error) {
+      console.error("Test failed:", error)
+    } finally {
+      // Close the browser
+      // await driver.quit()
+      //console.log("Test finished, browser closed")
+    }
+  }
+  catch{
 
-    // Take a screenshot of the final state
-    await driver.takeScreenshot().then((image) => {
-      require("fs").writeFileSync("shopify-test-result.png", image, "base64")
-    })
-    console.log("Screenshot saved as shopify-test-result.png")
-  } catch (error) {
-    console.error("Test failed:", error)
-  } finally {
-    // Close the browser
-   // await driver.quit()
-    //console.log("Test finished, browser closed")
   }
 }
 
