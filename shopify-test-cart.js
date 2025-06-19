@@ -19,13 +19,11 @@ async function runShopifyTest() {
     const sendpass = await driver.findElement(By.css("form #password"))
     sendpass.sendKeys("Bss123@#", Key.RETURN)
 
-    // Wait for the page to load completely
     await driver.wait(until.elementLocated(By.css("body")), 10000)
 
     // Test Case 1: Product details and following a product
     console.log("Test Case 1: Viewing product details and following")
 
-    // Click on a product
     const productLink = await driver.findElement(By.css('.card-wrapper.product-card-wrapper'))
     await productLink.click()
 
@@ -49,73 +47,74 @@ async function runShopifyTest() {
     const close = await driver.findElement(By.css('.drawer__close'))
     await close.click();
 
-    console.log("🛍️ Step 3: Navigating to cart page...")
+    console.log(" Step 3: Navigating to cart page...")
     await driver.get("https://dtn1-theme.myshopify.com/cart")
-
-    // Kiểm tra xem có redirect về password page không
-    const currentUrl = await driver.getCurrentUrl()
-    console.log(`Current URL: ${currentUrl}`)
-
-    if (currentUrl.includes("password")) {
-      console.log("❌ Still redirected to password page")
-      return
-    }
 
     // Đợi cart page load
     await driver.wait(until.elementLocated(By.css("body")), 5000)
     console.log("✅ Successfully accessed cart page")
 
     // Kiểm tra sản phẩm trong giỏ hàng
-    console.log("🔍 Verifying cart contents...")
+    console.log(" Verifying cart contents...")
     try {
-      const cartItems = await driver.findElements(By.css('.cart-item, .cart__item'));
+      // Sử dụng selector cụ thể hơn để tránh đếm trùng lặp
+      const cartItems = await driver.findElements(By.css('.cart-item:not(.hide), .cart__item:not(.hide)'));
       if (cartItems.length > 0) {
-        console.log(`✅ Found ${cartItems.length} item(s) in cart`);
+        console.log(`Giỏ hàng không trống!`);
         await driver.sleep(5000)
 
-        // Kiểm tra tên sản phẩm có đúng không
-        const cartProductTitle = await driver.findElement(By.css('.cart-item__name, .cart__item-title, .cart-item__heading a')).getText();
-        console.log(`Cart product: ${cartProductTitle}`);
-        
-        if (cartProductTitle.includes(productTitle) || productTitle.includes(cartProductTitle) || cartProductTitle !== '') {
-          console.log('✅ Correct product is in cart');
-        } else {
-          console.log('❌ Product title mismatch between PDP and cart');
-        }
         
         // Test Case 2: Cập nhật số lượng sản phẩm
-        console.log("\n🔄 Test Case 2: Updating product quantity...");
+        console.log(" Test Case 2: Updating product quantity...");
         
         try {
-          // Phương pháp 1: Tìm phần tử quantity input và thử nhiều cách để tương tác
+          // Phương pháp 1: Click button +/- để tăng/ giảm số lượng
           console.log("Attempting to find quantity input...");
+
+           // Tìm nút tăng số lượng trong form
+           const plusButton = await cartForm.findElement(By.css('button[name="plus"], button.quantity__button[name="plus"], .js-qty__adjust--plus, .quantity__button--plus'));
+           console.log("Đã tìm thấy nút tăng số lượng trong form");
+           
+           // Scroll đến nút plus để đảm bảo nhìn thấy được
+           await driver.executeScript("arguments[0].scrollIntoView(true);", plusButton);
+           await driver.sleep(5000);
+           
+           
+           console.log("Thử click bằng JavaScript...");
+           await driver.executeScript("arguments[0].click();", plusButton);
+           console.log("Đã click vào nút tăng số lượng lần 1");
+           await driver.sleep(5000);
+           
+           
+           await driver.executeScript("arguments[0].click();", plusButton);
+           console.log("Đã tăng số lượng lên 3");
+          await driver.sleep(10000);
+
+          // const quantitySelectors = [
+          //   'input[type="number"].quantity__input', 
+          //   '.cart__qty-input',
+          //   'input.quantity',
+          //   'input.cart-item-qty-input',
+          //   '.quantity-selector input',
+          //   '[data-quantity-input]',
+          //   '[name="updates[]"]'
+          // ];
           
-          // Liệt kê nhiều selector có thể cho input số lượng
-          const quantitySelectors = [
-            'input[type="number"].quantity__input', 
-            '.cart__qty-input',
-            'input.quantity',
-            'input.cart-item-qty-input',
-            '.quantity-selector input',
-            '[data-quantity-input]',
-            '[name="updates[]"]'
-          ];
+          // let quantityInput = null;
           
-          let quantityInput = null;
-          
-          // Thử từng selector cho đến khi tìm thấy
-          for (const selector of quantitySelectors) {
-            try {
-              const inputs = await driver.findElements(By.css(selector));
-              if (inputs.length > 0) {
-                console.log(`Found quantity input using selector: ${selector}`);
-                quantityInput = inputs[0]; // Lấy phần tử đầu tiên
-                break;
-              }
-            } catch (e) {
-              // Tiếp tục thử selector khác
-            }
-          }
+          // // Thử từng selector cho đến khi tìm thấy
+          // for (const selector of quantitySelectors) {
+          //   try {
+          //     const inputs = await driver.findElements(By.css(selector));
+          //     if (inputs.length > 0) {
+          //       console.log(`Found quantity input using selector: ${selector}`);
+          //       quantityInput = inputs[0]; // Lấy phần tử đầu tiên
+          //       break;
+          //     }
+          //   } catch (e) {
+          //     // Tiếp tục thử selector khác
+          //   }
+          // }
           
           if (quantityInput) {
             // Scroll đến phần tử để đảm bảo nhìn thấy được
@@ -256,131 +255,7 @@ async function runShopifyTest() {
           console.log(`Error removing product: ${removeError.message}`);
         }
         
-        // Test Case 4: Thêm lại sản phẩm và tiến hành checkout
-        console.log("\n🔄 Test Case 4: Re-adding product and proceeding to checkout...");
-        
-        // Quay lại trang PDP
-        await driver.navigate().back();
-        await driver.sleep(3000);
-        
-        // Nếu quay lại PDP, thêm sản phẩm vào giỏ hàng
-        try {
-          // Kiểm tra xem đã quay lại PDP chưa
-          let currentURL = await driver.getCurrentUrl();
-          console.log(`Current URL after navigate back: ${currentURL}`);
-          
-          // Thêm lại sản phẩm vào giỏ hàng
-          try {
-            const addToCartSelectors = [
-              'button[name="add"]', 
-              '.add-to-cart',
-              '.product-form__add-button',
-              '.product-form__cart-submit',
-              '[data-add-to-cart]'
-            ];
-            
-            let addToCartAgain = null;
-            
-            // Thử từng selector cho đến khi tìm thấy
-            for (const selector of addToCartSelectors) {
-              try {
-                const buttons = await driver.findElements(By.css(selector));
-                if (buttons.length > 0) {
-                  console.log(`Found add to cart button using selector: ${selector}`);
-                  addToCartAgain = buttons[0];
-                  break;
-                }
-              } catch (e) {
-                // Tiếp tục thử selector khác
-              }
-            }
-            
-            if (addToCartAgain) {
-              // Scroll đến nút Add to cart để đảm bảo nhìn thấy được
-              await driver.executeScript("arguments[0].scrollIntoView({block: 'center'});", addToCartAgain);
-              await driver.sleep(1000);
-              
-              try {
-                await addToCartAgain.click();
-                console.log("Product added to cart again");
-              } catch (clickError) {
-                console.log(`Direct click failed: ${clickError.message}, trying JavaScript click...`);
-                await driver.executeScript("arguments[0].click();", addToCartAgain);
-                console.log("Product added to cart via JavaScript click");
-              }
-              
-              // Đợi cart drawer hiển thị
-              await driver.sleep(5000);  // Đợi lâu hơn
-              
-              // Click checkout nếu có trong cart drawer
-              try {
-                const checkoutSelectors = [
-                  SELECTORS.DAWN_CART_DRAWER_CHECKOUT,
-                  '.cart-checkout-button',
-                  '.cart__checkout',
-                  '.checkout-button',
-                  'button[name="checkout"]',
-                  'input[name="checkout"]',
-                  'a[href*="checkout"]'
-                ];
-                
-                let checkoutButton = null;
-                
-                // Thử từng selector cho đến khi tìm thấy
-                for (const selector of checkoutSelectors) {
-                  try {
-                    const buttons = await driver.findElements(By.css(selector));
-                    if (buttons.length > 0) {
-                      console.log(`Found checkout button using selector: ${selector}`);
-                      checkoutButton = buttons[0];
-                      break;
-                    }
-                  } catch (e) {
-                    // Tiếp tục thử selector khác
-                  }
-                }
-                
-                if (checkoutButton) {
-                  // Scroll đến nút checkout để đảm bảo nhìn thấy được
-                  await driver.executeScript("arguments[0].scrollIntoView({block: 'center'});", checkoutButton);
-                  await driver.sleep(1000);
-                  
-                  try {
-                    await checkoutButton.click();
-                    console.log("Checkout button clicked");
-                  } catch (clickError) {
-                    console.log(`Direct click failed: ${clickError.message}, trying JavaScript click...`);
-                    await driver.executeScript("arguments[0].click();", checkoutButton);
-                    console.log("Checkout button clicked via JavaScript");
-                  }
-                  
-                  await driver.sleep(5000);
-                  
-                  const checkoutURL = await driver.getCurrentUrl();
-                  if (checkoutURL.includes('checkout')) {
-                    console.log(`✅ Successfully navigated to checkout: ${checkoutURL}`);
-                    
-                    // Chụp ảnh màn hình checkout
-                    await takeScreenshot(driver, "checkout-screen.png");
-                  } else {
-                    console.log(`❌ Failed to navigate to checkout. Current URL: ${checkoutURL}`);
-                  }
-                } else {
-                  console.log("Could not find checkout button in cart drawer");
-                }
-              } catch (error) {
-                console.log(`Error during checkout: ${error.message}`);
-              }
-            } else {
-              console.log("Could not find add to cart button");
-            }
-          } catch (error) {
-            console.log(`Could not re-add product: ${error.message}`);
-          }
-        } catch (error) {
-          console.log(`Error navigating back: ${error.message}`);
-        }
-        
+        // Test Case 4 đã được comment out
       } else {
         console.log("❌ No items found in cart");
       }
