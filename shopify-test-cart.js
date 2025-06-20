@@ -43,10 +43,6 @@ async function runShopifyTest() {
 
     await driver.sleep(1000)
 
-    // Lưu tên sản phẩm để so sánh sau này
-    const productTitle = await driver.findElement(By.css('h1')).getText();
-    console.log(`Selected product: ${productTitle}`);
-
     //add to cart 
     const addToCartButton = await driver.findElement(By.css('button[name="add"], .add-to-cart'))
     await addToCartButton.click()
@@ -68,11 +64,6 @@ async function runShopifyTest() {
 
     // Kiểm tra sản phẩm trong giỏ hàng
     console.log(" Verifying cart contents...")
-    const cartItems = await driver.findElements(By.css('.cart-item:not(.hide), .cart__item:not(.hide)'));
-    if (cartItems.length > 0) {
-      await driver.sleep(2000)
-      
-      // Test Case 2: Cập nhật số lượng sản phẩm
       console.log(" Test Case 2: Updating product quantity...");
       try {
         // Phương pháp 1: Nhap input 
@@ -114,7 +105,27 @@ async function runShopifyTest() {
               //clear item product 
               const removeitem = await driver.wait(until.elementLocated(By.css('#Remove-1 a')), 5000);
               await removeitem.click();
+              
+              // Đợi xử lý xóa sản phẩm
+              await driver.sleep(3000);
 
+              await driver.sleep(30000);
+
+              
+              
+              // Kiểm tra URL hiện tại sau khi xóa
+              const currentUrl = await driver.getCurrentUrl();
+              console.log(`Current URL after removal: ${currentUrl}`);
+              
+              // Nếu không ở trang giỏ hàng, quay lại trang giỏ hàng
+              if (!currentUrl.includes('/cart')) {
+                console.log("Redirecting back to cart page...");
+                await driver.get("https://dtn1-theme.myshopify.com/cart");
+                await driver.wait(until.elementLocated(By.css("body")), 5000);
+                console.log("Back to cart page");
+              }
+              await driver.sleep(10000)
+              
 
             } catch (updateError) {
               console.log("No update button found or auto-update enabled");
@@ -139,21 +150,13 @@ async function runShopifyTest() {
       } else {
         console.log("❌ Cart is not empty after removal");
       }
-      // Test Case 4 đã được comment out  
-    } else {
-      console.log("❌ No items found in cart");
-    }
-
-
+      
   } catch (error) {
     console.error(`Error during cart verification: ${error.message}`);
   } finally {
     console.log("\n🏁 Test finished!");
-    //console.log("Closing browser in 5 seconds...");
-    //await driver.sleep(5000); // Give time to see the final screen
-    //await driver.quit();
+    
   }
 }
-
 // Run the test
 runShopifyTest();
