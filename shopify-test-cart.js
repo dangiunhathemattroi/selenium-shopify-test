@@ -5,15 +5,6 @@ import {
   until
 } from "selenium-webdriver";
 import chrome from "selenium-webdriver/chrome.js";
-import {
-  waitForElement,
-  safeClick,
-  fillField,
-  takeScreenshot
-} from "./utils/helpers.js";
-import {
-  SELECTORS
-} from "./utils/selectors.js";
 
 async function runShopifyTest() {
   const options = new chrome.Options();
@@ -56,7 +47,7 @@ async function runShopifyTest() {
     await close.click();
 
     console.log(" Step 3: Navigating to cart page...")
-    await driver.get("https://dtn1-theme.myshopify.com/cart")
+    await driver.get("https://dtn1-theme.myshopify.com/vi-vn/cart")
 
     // Đợi cart page load
     await driver.wait(until.elementLocated(By.css("body")), 2000)
@@ -83,34 +74,21 @@ async function runShopifyTest() {
             console.log('Cập nhật số lượng thành công!')
 
             // Tìm và nhấn nút cập nhật giỏ hàng 
-            try {
               const buttonPlus = await driver.findElement(By.css('form.cart__contents .cart__items .cart-items #CartItem-1 .cart-item__quantity button[name="plus"]'));
               await buttonPlus.click();
-              driver.sleep(1000)
-              await buttonPlus.click();
-              driver.sleep(1000)
-              await buttonPlus.click();
-              driver.sleep(1000)
-              await buttonPlus.click();
-              driver.sleep(1000)
-              await buttonPlus.click();
+              await driver.sleep(2000)
 
               const buttonminus = await driver.findElement(By.css('form.cart__contents .cart__items .cart-items #CartItem-1 .cart-item__quantity button[name="minus"]'));
               await buttonminus.click();
-              driver.sleep(2000)
-              await buttonminus.click();
-              driver.sleep(2000)
 
               console.log("\n Test Case 3: Removing product from cart...");
+              await driver.sleep(2000)
               //clear item product 
-              const removeitem = await driver.wait(until.elementLocated(By.css('#Remove-1 a')), 5000);
+              const removeitem = await driver.findElement(By.css('cart-remove-button#Remove-1 a.button--tertiary'));
               await removeitem.click();
               
               // Đợi xử lý xóa sản phẩm
-              await driver.sleep(3000);
-
-              await driver.sleep(30000);
-
+              await driver.sleep(2000);
               
               
               // Kiểm tra URL hiện tại sau khi xóa
@@ -120,23 +98,22 @@ async function runShopifyTest() {
               // Nếu không ở trang giỏ hàng, quay lại trang giỏ hàng
               if (!currentUrl.includes('/cart')) {
                 console.log("Redirecting back to cart page...");
-                await driver.get("https://dtn1-theme.myshopify.com/cart");
+                await driver.get("https://dtn1-theme.myshopify.com/vi-vn/cart");
                 await driver.wait(until.elementLocated(By.css("body")), 5000);
                 console.log("Back to cart page");
               }
               await driver.sleep(10000)
               
 
-            } catch (updateError) {
-              console.log("No update button found or auto-update enabled");
-            }
+              console.log("No update button found or auto-update enabled", updateError);
+            
 
           } catch (jsError) {
             console.log(`JavaScript update failed: ${jsError.message}`);
           }
 
         } else {
-          console.log("❌ Could not find any quantity input element");
+          console.log("Could not find any quantity input element");
         }
       } catch (quantityError) {
         console.log(`Error updating quantity: ${quantityError.message}`);
@@ -146,9 +123,9 @@ async function runShopifyTest() {
       const emptyCartFound = await driver.findElements(By.css('.cart__item')).then(items => items.length === 0);
 
       if (emptyCartFound) {
-        console.log("✅ Cart is now empty");
+        console.log("Cart is now empty");
       } else {
-        console.log("❌ Cart is not empty after removal");
+        console.log("Cart is not empty after removal");
       }
       
   } catch (error) {
