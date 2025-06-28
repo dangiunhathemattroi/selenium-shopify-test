@@ -24,7 +24,7 @@ export async function safeClick(driver, selector, retries = 3) {
     try {
       const element = await waitForElement(driver, selector)
       await driver.executeScript("arguments[0].scrollIntoView(true);", element)
-      await driver.sleep(500) // Give time for any animations
+      await driver.sleep(1000) // Give time for any animations
       await element.click()
       return true
     } catch (error) {
