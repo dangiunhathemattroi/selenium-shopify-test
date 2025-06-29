@@ -1,4 +1,4 @@
-import { By, until } from "selenium-webdriver"
+import { By, Key, until } from "selenium-webdriver";
 
 /**
  * Waits for an element to be visible and returns it
@@ -69,5 +69,17 @@ export async function takeScreenshot(driver, filename) {
     console.log(`Screenshot saved as ${filename}`)
   } catch (error) {
     console.error(`Failed to take screenshot: ${error.message}`)
+  }
+}
+
+export async function loginShopify(driver, password) {
+  try {
+    await driver.wait(until.elementLocated(By.css("form #password")), 5000)
+    const sendpass = await driver.findElement(By.css("form #password"))
+    sendpass.sendKeys(password, Key.RETURN)
+    await driver.wait(until.elementLocated(By.css("body")), 5000)
+  } catch (error) {
+    console.error("Password field not found:", error.message)
+    return
   }
 }
