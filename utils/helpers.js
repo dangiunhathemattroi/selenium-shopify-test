@@ -83,3 +83,7 @@ export async function loginShopify(driver, password) {
     return
   }
 }
+
+export function randomDelay(min = 1500, max = 4000) {
+  return new Promise(resolve => setTimeout(resolve, Math.random() * (max - min) + min));
+}

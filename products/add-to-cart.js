@@ -6,7 +6,7 @@ export async function addToCart(driver) {
         await driver.wait(until.elementLocated(By.css('button[name="add"], .add-to-cart')), 5000)
         const addToCartButton = await driver.findElement(By.css('button[name="add"], .add-to-cart'))
         await addToCartButton.click()
-        await driver.sleep(2000); // Wait for the cart drawer to open
+        await driver.sleep(2000);
         await closeDrawer(driver);
     } catch (error) {
         console.error("Error in addToCart function:", error);

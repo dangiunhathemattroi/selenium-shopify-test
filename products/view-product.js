@@ -11,7 +11,7 @@ export async function viewProduct(driver) {
         throw error;
     } finally {
         // Ensure the product page is loaded
-        await driver.wait(until.elementLocated(By.css(".content-for-layout, product-info")), 10000);
+        await driver.wait(until.elementLocated(By.css(".content-for-layout, product-info")), 5000);
         await driver.sleep(2000);
         console.log("Product page loaded");
     }

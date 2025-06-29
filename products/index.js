@@ -4,11 +4,19 @@ import { loginShopify } from "../utils/helpers.js";
 import { viewProduct } from "./view-product.js";
 import { addToCart } from "./add-to-cart.js";
 import { exceptionQuantityEqual0 } from "./exceptions/exception-quantity-equal-0.js";
+import { exceptionQuantityEqualInventory } from "./exceptions/exception-quantity-equal-inventory.js";
+import { exceptionQuantityGteInventory } from "./exceptions/exception-quantity-gte-inventory.js";
+import { exceptionQuantityDecimalOrNegative } from "./exceptions/exception-quantity-decimal-or-negative.js";
+import { exceptionQuantityAddString } from "./exceptions/exception-quantity-add-string.js";
+import { exceptionQuantityAddSpace } from "./exceptions/exception-quantity-add-space.js";
 
 async function runShopifyTest() {
     const options = new chrome.Options();
-    options.addArguments('--disable-gpu', '--no-sandbox', '--disable-dev-shm-usage');
-
+    options.addArguments(
+        "user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64)...",
+        "--disable-blink-features=AutomationControlled",
+        "--disable-infobars"
+    );
     const driver = await new Builder()
         .forBrowser('chrome')
         .setChromeOptions(options)
@@ -37,11 +45,15 @@ async function runShopifyTest() {
         console.log('TC3: Set quantity =0')
         await exceptionQuantityEqual0(driver);
         console.log('TC4: Set quantity= ton kho')
+        await exceptionQuantityEqualInventory(driver);
         console.log('TC5: Set quantity= ton kho+1')
-
-        console.log('TC6:Nhap ki tu')
-        console.log('TC7:Nhap space')
-
+        await exceptionQuantityGteInventory(driver);
+        console.log('TC6:Nhap so am/so thap phan')
+        await exceptionQuantityDecimalOrNegative(driver);
+        console.log('TC7:Nhap ki tu');
+        await exceptionQuantityAddString(driver);
+        console.log('TC8:Nhap space');
+        await exceptionQuantityAddSpace(driver);
     } catch (err) {
         console.log(err);
     } finally {
