@@ -1,10 +1,10 @@
-import { By, until } from "selenium-webdriver";
+import { By } from "selenium-webdriver";
 import { closeDrawer } from "./close-drawer.js";
 
 export async function addToCart(driver) {
     try {
-        await driver.wait(until.elementLocated(By.css('button[name="add"], .add-to-cart')), 5000)
-        const addToCartButton = await driver.findElement(By.css('button[name="add"], .add-to-cart'))
+        await driver.sleep(2000);
+        const addToCartButton = await driver.findElement(By.css('button[name="add"], .product-form__submit.button.button--full-width'))
         await addToCartButton.click()
         await driver.sleep(2000);
         await closeDrawer(driver);

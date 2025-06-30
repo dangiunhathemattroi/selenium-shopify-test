@@ -1,12 +1,12 @@
 import { quantityInput } from "../quantity-input.js";
-import { addToCart } from "../add-to-cart.js";
+import { closeDrawer } from "../close-drawer.js";
 
 export async function exceptionQuantityEqual0(driver) {
     try {
         await driver.sleep(3000);
         await quantityInput(driver, 0);
         await driver.sleep(3000);
-        await addToCart(driver);
+        await closeDrawer(driver);
     } catch (error) {
         console.error("Error in exceptionQuantityEqual0 function:", error);
         throw error;

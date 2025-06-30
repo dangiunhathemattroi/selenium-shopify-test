@@ -1,15 +1,15 @@
 import { quantityInput } from "../quantity-input.js";
-import { addToCart } from "../add-to-cart.js";
+import { closeDrawer } from "../close-drawer.js";
 
 export async function exceptionQuantityDecimalOrNegative(driver) {
     try {
         await quantityInput(driver, -1);
         await driver.sleep(3000);
-        await addToCart(driver);
+        await closeDrawer(driver);
         await driver.sleep(3000);
-        await quantityInput(driver, -1);
+        await quantityInput(driver, 1.3);
         await driver.sleep(3000);
-        await addToCart(driver);
+        await closeDrawer(driver);
     } catch (error) {
         console.error("Error in exceptionQuantityEqualInventory function:", error);
         throw error;
