@@ -1,4 +1,4 @@
-import { Builder, By, until } from "selenium-webdriver";
+import { Builder, By } from "selenium-webdriver";
 import chrome from "selenium-webdriver/chrome.js";
 import { loginShopify } from "../utils/helpers.js";
 import { viewProduct } from "./view-product.js";
@@ -17,44 +17,55 @@ async function runShopifyTest() {
         "--disable-infobars"
     );
     const driver = await new Builder()
-        .forBrowser('chrome')
+        .forBrowser("chrome")
         .setChromeOptions(options)
         .build();
 
     try {
-        // Truy cập vào trang Shopify
-        await driver.get("https://dtn1-theme.myshopify.com/");
-        console.log("Navigated to Shopify store");
-
         await loginShopify(driver, "Bss123@#");
         // Test Case 1: Product details and following a product
         await viewProduct(driver);
-        // //add to cart 
+        // //add to cart
         await addToCart(driver);
         //see product khác từ PDP
-        await driver.executeScript("arguments[0].scrollIntoView({behavior: 'smooth', block: 'center'});", await driver.findElement(By.css('suggestion-viewed-products.suggestions-viewed-products')));
+        await driver.executeScript(
+            "arguments[0].scrollIntoView({behavior: 'smooth', block: 'center'});",
+            await driver.findElement(
+                By.css("suggestion-viewed-products.suggestions-viewed-products")
+            )
+        );
         // Test Case 2: Add to cart
-        console.log("Test Case 2: Adding product to cart")
+        console.log("Test Case 2: Adding product to cart");
         await viewProduct(driver);
         // Add to cart
         await addToCart(driver);
         // Wait for the cart to update
-        console.log("Product added to cart")
-        console.log('TC3: Set quantity =0')
+        console.log("Product added to cart");
+        console.log("TC3: Set quantity =0");
         await exceptionQuantityEqual0(driver);
-        console.log('TC4: Set quantity= ton kho')
+        console.log("TC4: Set quantity= ton kho");
         await exceptionQuantityEqualInventory(driver);
-        console.log('TC5: Set quantity= ton kho+1')
-        await driver.executeScript("arguments[0].scrollIntoView({behavior: 'smooth', block: 'center'});", await driver.findElement(By.css('suggestion-viewed-products.suggestions-viewed-products')));
+        console.log("TC5: Set quantity= ton kho+1");
+        await driver.executeScript(
+            "arguments[0].scrollIntoView({behavior: 'smooth', block: 'center'});",
+            await driver.findElement(
+                By.css("suggestion-viewed-products.suggestions-viewed-products")
+            )
+        );
         await viewProduct(driver);
         await exceptionQuantityGteInventory(driver);
-        console.log('TC6:Nhap so am/so thap phan')
-        await driver.executeScript("arguments[0].scrollIntoView({behavior: 'smooth', block: 'center'});", await driver.findElement(By.css('suggestion-viewed-products.suggestions-viewed-products')));
+        console.log("TC6:Nhap so am/so thap phan");
+        await driver.executeScript(
+            "arguments[0].scrollIntoView({behavior: 'smooth', block: 'center'});",
+            await driver.findElement(
+                By.css("suggestion-viewed-products.suggestions-viewed-products")
+            )
+        );
         await viewProduct(driver);
         await exceptionQuantityDecimalOrNegative(driver);
-        console.log('TC7:Nhap ki tu');
+        console.log("TC7:Nhap ki tu");
         await exceptionQuantityAddString(driver);
-        console.log('TC8:Nhap space');
+        console.log("TC8:Nhap space");
         await exceptionQuantityAddSpace(driver);
     } catch (err) {
         console.log(err);

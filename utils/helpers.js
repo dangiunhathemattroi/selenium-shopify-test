@@ -74,6 +74,8 @@ export async function takeScreenshot(driver, filename) {
 
 export async function loginShopify(driver, password) {
   try {
+    await driver.get("https://dtn1-theme.myshopify.com/");
+    console.log("Navigated to Shopify store");
     await driver.wait(until.elementLocated(By.css("form #password")), 5000)
     const sendpass = await driver.findElement(By.css("form #password"))
     sendpass.sendKeys(password, Key.RETURN)
@@ -83,6 +85,7 @@ export async function loginShopify(driver, password) {
     return
   }
 }
+
 
 export function randomDelay(min = 1500, max = 4000) {
   return new Promise(resolve => setTimeout(resolve, Math.random() * (max - min) + min));
