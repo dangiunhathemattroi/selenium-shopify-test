@@ -1,6 +1,5 @@
-import { By, until, Key } from "selenium-webdriver";
-
-export async function checkout(driver) {
+import { By, Key, until } from "selenium-webdriver";
+export async function exceptionCheckoutCardNumber16(driver) {
     try {
         await driver.sleep(3000);
         const loginElements = await driver.findElements(By.css(".content-for-layout .login"));
@@ -15,32 +14,31 @@ export async function checkout(driver) {
 
         await driver.sleep(3000);
 
-        const pageElements = await driver.findElements(By.css(".content-for-layout"));
-
-        if (pageElements.length) {
-            await driver.get("https://dtn1-theme.myshopify.com/checkout");
-        }
-
         console.log("checkout page loaded");
 
-        await driver.sleep(5000);
+        await driver.executeScript(
+            "arguments[0].scrollIntoView({behavior: 'smooth', block: 'center'});",
+            await driver.findElement(By.id('shippingAddressForm')),
+        );
 
-        const firstNameEls = await driver.findElements(By.id("TextField0"));
+        await driver.sleep(2000);
+
+        const firstNameEls = await driver.findElements(By.xpath("//input[@name='firstName']"));
         if (firstNameEls.length) {
             await firstNameEls[0].sendKeys("Test");
         }
 
-        const lastNameEls = await driver.findElements(By.id("TextField1"));
+        const lastNameEls = await driver.findElements(By.xpath("//input[@name='lastName']"));
         if (lastNameEls.length) {
             await lastNameEls[0].sendKeys("User");
         }
 
-        const addressEls = await driver.findElements(By.id("TextField2"));
+        const addressEls = await driver.findElements(By.xpath("//input[@name='address1']"));
         if (addressEls.length) {
             await addressEls[0].sendKeys("123 Test Street");
         }
 
-        const cityEls = await driver.findElements(By.id("TextField4"));
+        const cityEls = await driver.findElements(By.xpath("//input[@name='city']"));
         if (cityEls.length) {
             await cityEls[0].sendKeys("Test City", Key.RETURN);
         }
@@ -54,7 +52,7 @@ export async function checkout(driver) {
             10000
         );
         await driver.switchTo().frame(numberFrame);
-        await driver.findElement(By.name("number")).sendKeys("1");
+        await driver.findElement(By.name("number")).sendKeys("123456789123456789");
         await driver.sleep(2000);
         await driver.switchTo().defaultContent();
 
@@ -91,8 +89,12 @@ export async function checkout(driver) {
             until.elementLocated(By.id("checkout-pay-button")),
             10000
         );
+
         await payButton.click();
     } catch (error) {
         console.error("Error in Checkout function:", error);
+    } finally {
+        console.log("Checkout Field Empty successfully");
+        await driver.sleep(2000);
     }
 }

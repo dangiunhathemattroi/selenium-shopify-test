@@ -14,7 +14,7 @@ async function runShopifyTest() {
     await driver.get("https://dtn1-theme.myshopify.com/");
     console.log("Navigated to Shopify store");
 
-     const sendpass = await driver.findElement(By.css("form #password"))
+    const sendpass = await driver.findElement(By.css("form #password"))
     sendpass.sendKeys("Bss123@#", Key.RETURN)
 
 
@@ -31,15 +31,16 @@ async function runShopifyTest() {
     console.log("PDP loaded!");
 
     await driver.sleep(5000)
-  //see product khác từ PDP
+    //see product khác từ PDP
     await driver.executeScript("arguments[0].scrollIntoView({behavior: 'smooth', block: 'center'});", await driver.findElement(By.css('suggestion-viewed-products.suggestions-viewed-products')));
     await driver.sleep(5000);
     const product3 = await driver.findElement(By.css('.card-wrapper.product-card-wrapper'));
     product3.click();
+    await driver.sleep(5000);
     console.log("PDP loaded!");
-    } finally {
-    // await driver.quit();
-     console.log("Test finished!");
+  } finally {
+    await driver.quit();
+    console.log("Test finished!");
   }
 }
 

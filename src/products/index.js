@@ -1,6 +1,6 @@
 import { Builder, By } from "selenium-webdriver";
 import chrome from "selenium-webdriver/chrome.js";
-import { loginShopify } from "../utils/helpers.js";
+import { loginShopify } from "../../utils/helpers.js";
 import { viewProduct } from "./view-product.js";
 import { addToCart } from "./add-to-cart.js";
 import { exceptionQuantityEqual0 } from "./exceptions/exception-quantity-equal-0.js";
@@ -46,21 +46,9 @@ async function runShopifyTest() {
         console.log("TC4: Set quantity= ton kho");
         await exceptionQuantityEqualInventory(driver);
         console.log("TC5: Set quantity= ton kho+1");
-        await driver.executeScript(
-            "arguments[0].scrollIntoView({behavior: 'smooth', block: 'center'});",
-            await driver.findElement(
-                By.css("suggestion-viewed-products.suggestions-viewed-products")
-            )
-        );
         await viewProduct(driver);
         await exceptionQuantityGteInventory(driver);
         console.log("TC6:Nhap so am/so thap phan");
-        await driver.executeScript(
-            "arguments[0].scrollIntoView({behavior: 'smooth', block: 'center'});",
-            await driver.findElement(
-                By.css("suggestion-viewed-products.suggestions-viewed-products")
-            )
-        );
         await viewProduct(driver);
         await exceptionQuantityDecimalOrNegative(driver);
         console.log("TC7:Nhap ki tu");

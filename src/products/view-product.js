@@ -2,6 +2,13 @@ import { By, until } from "selenium-webdriver";
 
 export async function viewProduct(driver) {
     try {
+        await driver.sleep(2000);
+        await driver.executeScript(
+            "arguments[0].scrollIntoView({behavior: 'smooth', block: 'center'});",
+            await driver.findElement(
+                By.css("featured-collection.featured-collection, suggestion-viewed-products.suggestions-viewed-products")
+            ), 10000
+        );
         await driver.sleep(2000); // Wait for the page to load
         await driver.wait(until.elementLocated(By.css(".card-wrapper.product-card-wrapper")), 5000)
         const productEls = await driver.findElements(By.css('.card-wrapper.product-card-wrapper'))

@@ -26,7 +26,7 @@ async function runShopifyTest() {
 
     const searchIcon = await driver.findElement(By.css('details-modal.header__search svg.icon-search, summary.header__icon svg.icon-search'));
     await searchIcon.click();
-    
+
     const searchField = await driver.findElement(By.css("input[name='q']"));
     await searchField.sendKeys("sony", Key.RETURN);
     await driver.sleep(5000);
@@ -37,12 +37,12 @@ async function runShopifyTest() {
     console.log("TC2: check tìm kiếm dữ liệu không tồn tại trong DB...")
     await driver.get("https://dtn1-theme.myshopify.com/");
     console.log("Navigated to Shopify store");
-  
+
     console.log("Starting search ...");
     const searchIcon2 = await driver.findElement(By.css('details-modal.header__search svg.icon-search, summary.header__icon svg.icon-search'));
     await searchIcon2.click();
     const searchField2 = await driver.findElement(By.css("input[name='q']"));
-    await searchField2.sendKeys("Nga", Key.RETURN);
+    await searchField2.sendKeys("sssssssssssssssssssssssssssss", Key.RETURN);
     await driver.sleep(5000);
     console.log("Done execute TC2!")
 
@@ -77,10 +77,10 @@ async function runShopifyTest() {
     await driver.sleep(5000)
     console.log("Done execute TC5!")
     console.log("Search initiated!");
- 
+
   } catch (error) {
     console.error("Test failed:", error);
-    
+
   } finally {
     await driver.quit();
     console.log("Test finished, browser closed");

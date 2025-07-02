@@ -17,13 +17,23 @@ export async function login(driver, account, password) {
         await driver.sleep(3000);
         const loginElements = await driver.findElements(By.css(".content-for-layout .login"));
         if (loginElements.length) {
+            await driver.sleep(2000);
             handleLogin(driver, account, password);
         } else {
+            await driver.sleep(2000);
             await driver.get('https://dtn1-theme.myshopify.com/account/login');
+            await driver.sleep(2000);
             handleLogin(driver, account, password);
         }
     } catch (error) {
         console.error("Error in login function:", error);
+    } finally {
+        await driver.sleep(3000);
+        const homepageElements = await driver.findElements(By.css(".content-for-layout .featured-collection"));
+        if (!homepageElements.length) {
+            await driver.get('https://dtn1-theme.myshopify.com');
+        }
+        console.log("Login succesfully");
     }
 }
 
