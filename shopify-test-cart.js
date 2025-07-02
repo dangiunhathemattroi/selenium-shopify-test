@@ -1,4 +1,5 @@
-import { Builder,By,Key,
+import {
+  Builder, By, Key,
   until
 } from "selenium-webdriver";
 import chrome from "selenium-webdriver/chrome.js";
@@ -44,7 +45,7 @@ async function runShopifyTest() {
     await close.click();
 
     console.log(" Step 3: Navigating to cart page...")
-    await driver.get("https://dtn1-theme.myshopify.com/vi-vn/cart")
+    await driver.get("https://dtn1-theme.myshopify.com/cart")
 
     // Đợi cart page load
     await driver.wait(until.elementLocated(By.css("body")), 2000)
@@ -52,84 +53,85 @@ async function runShopifyTest() {
 
     // Kiểm tra sản phẩm trong giỏ hàng
     console.log(" Verifying cart contents...")
-      console.log(" Test Case 2: Updating product quantity...");
-      try {
-        // Phương pháp 1: Nhap input 
+    console.log(" Test Case 2: Updating product quantity...");
+    try {
+      // Phương pháp 1: Nhap input 
 
-        const quantityInput = await driver.findElement(By.css("form.cart__contents .cart__items .cart-items #CartItem-1 .cart-item__quantity input.quantity__input"))
+      const quantityInput = await driver.findElement(By.css("form.cart__contents .cart__items .cart-items #CartItem-1 .cart-item__quantity input.quantity__input"))
 
-        if (quantityInput) {
-          // Scroll đến phần tử để đảm bảo nhìn thấy được
-          await driver.executeScript("arguments[0].scrollIntoView({block: 'center'});", quantityInput);
-          await driver.sleep(1000);
+      if (quantityInput) {
+        // Scroll đến phần tử để đảm bảo nhìn thấy được
+        await driver.executeScript("arguments[0].scrollIntoView({block: 'center'});", quantityInput);
+        await driver.sleep(1000);
 
-          try {
-            // Phương pháp 2: Sử dụng JavaScript để thay đổi giá trị
-            console.log("Using JavaScript to update quantity...");
-            await driver.executeScript("arguments[0].value = '10';", quantityInput);
-            await driver.sleep(500);
-            console.log('Cập nhật số lượng thành công!')
+        try {
+          // Phương pháp 2: Sử dụng JavaScript để thay đổi giá trị
+          console.log("Using JavaScript to update quantity...");
+          await driver.executeScript("arguments[0].value = '10';", quantityInput);
+          await driver.sleep(500);
+          console.log('Cập nhật số lượng thành công!')
 
-            // Tìm và nhấn nút cập nhật giỏ hàng 
-              const buttonPlus = await driver.findElement(By.css('form.cart__contents .cart__items .cart-items #CartItem-1 .cart-item__quantity button[name="plus"]'));
-              await buttonPlus.click();
-              await driver.sleep(2000)
+          // Tìm và nhấn nút cập nhật giỏ hàng 
+          const buttonPlus = await driver.findElement(By.css('form.cart__contents .cart__items .cart-items #CartItem-1 .cart-item__quantity button[name="plus"]'));
+          await buttonPlus.click();
+          await driver.sleep(2000)
 
-              const buttonminus = await driver.findElement(By.css('form.cart__contents .cart__items .cart-items #CartItem-1 .cart-item__quantity button[name="minus"]'));
-              await buttonminus.click();
+          const buttonminus = await driver.findElement(By.css('form.cart__contents .cart__items .cart-items #CartItem-1 .cart-item__quantity button[name="minus"]'));
+          await buttonminus.click();
 
-              console.log("\n Test Case 3: Removing product from cart...");
-              await driver.sleep(2000)
-              //clear item product 
-              const removeitem = await driver.findElement(By.css('cart-remove-button#Remove-1 a.button--tertiary'));
-              await removeitem.click();
-              
-              // Đợi xử lý xóa sản phẩm
-              await driver.sleep(2000);
-              
-              
-              // Kiểm tra URL hiện tại sau khi xóa
-              const currentUrl = await driver.getCurrentUrl();
-              console.log(`Current URL after removal: ${currentUrl}`);
-              
-              // Nếu không ở trang giỏ hàng, quay lại trang giỏ hàng
-              if (!currentUrl.includes('/cart')) {
-                console.log("Redirecting back to cart page...");
-                await driver.get("https://dtn1-theme.myshopify.com/vi-vn/cart");
-                await driver.wait(until.elementLocated(By.css("body")), 5000);
-                console.log("Back to cart page");
-              }
-              await driver.sleep(10000)
-              
+          console.log("\n Test Case 3: Removing product from cart...");
+          await driver.sleep(2000)
+          //clear item product 
+          const removeitem = await driver.findElement(By.css('cart-remove-button#Remove-1 a.button--tertiary'));
+          await removeitem.click();
 
-              console.log("No update button found or auto-update enabled", updateError);
-            
+          // Đợi xử lý xóa sản phẩm
+          await driver.sleep(2000);
 
-          } catch (jsError) {
-            console.log(`JavaScript update failed: ${jsError.message}`);
+
+          // Kiểm tra URL hiện tại sau khi xóa
+          const currentUrl = await driver.getCurrentUrl();
+          console.log(`Current URL after removal: ${currentUrl}`);
+
+          // Nếu không ở trang giỏ hàng, quay lại trang giỏ hàng
+          if (!currentUrl.includes('/cart')) {
+            console.log("Redirecting back to cart page...");
+            await driver.get("https://dtn1-theme.myshopify.com/cart");
+            await driver.wait(until.elementLocated(By.css("body")), 5000);
+
+            console.log("Back to cart page");
           }
+          await driver.sleep(10000)
 
-        } else {
-          console.log("Could not find any quantity input element");
+
+          console.log("No update button found or auto-update enabled", updateError);
+
+
+        } catch (jsError) {
+          console.log(`JavaScript update failed: ${jsError.message}`);
         }
-      } catch (quantityError) {
-        console.log(`Error updating quantity: ${quantityError.message}`);
-      }
 
-      // Kiểm tra xem giỏ hàng có rỗng không
-      const emptyCartFound = await driver.findElements(By.css('.cart__item')).then(items => items.length === 0);
-
-      if (emptyCartFound) {
-        console.log("Cart is now empty");
       } else {
-        console.log("Cart is not empty after removal");
+        console.log("Could not find any quantity input element");
       }
-      
+    } catch (quantityError) {
+      console.log(`Error updating quantity: ${quantityError.message}`);
+    }
+
+    // Kiểm tra xem giỏ hàng có rỗng không
+    const emptyCartFound = await driver.findElements(By.css('.cart__item')).then(items => items.length === 0);
+
+    if (emptyCartFound) {
+      console.log("Cart is now empty");
+    } else {
+      console.log("Cart is not empty after removal");
+    }
+
   } catch (error) {
     console.error(`Error during cart verification: ${error.message}`);
   } finally {
     console.log("\n🏁 Test finished!");
-    
+
   }
 }
 // Run the test

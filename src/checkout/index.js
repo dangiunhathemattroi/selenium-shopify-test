@@ -23,15 +23,15 @@ async function runShopifyTest() {
         // Truy cập vào trang Shopify
         await loginShopify(driver, "Bss123@#");
         console.log("Test case 1: Checkout successfully")
-        // await viewProduct(driver);
-        // await buyItNow(driver);
-        // await checkout(driver);
-        // await driver.get("https://dtn1-theme.myshopify.com");
-
         await viewProduct(driver);
         await buyItNow(driver);
-        await exceptionCheckoutFieldEmpty(driver);
-        await exceptionCheckoutCardNumber16(driver);
+        await checkout(driver);
+        await driver.get("https://dtn1-theme.myshopify.com");
+
+        // await viewProduct(driver);
+        // await buyItNow(driver);
+        // await exceptionCheckoutFieldEmpty(driver);
+        // await exceptionCheckoutCardNumber16(driver);
     } catch (err) {
         console.log(err);
     } finally {

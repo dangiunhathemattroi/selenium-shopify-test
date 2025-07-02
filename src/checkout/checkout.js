@@ -25,7 +25,7 @@ export async function checkout(driver) {
 
         console.log("checkout page loaded");
 
-        await driver.sleep(5000);
+        await driver.sleep(10000);
 
         const firstNameEls = await driver.findElements(By.id("TextField0"));
         if (firstNameEls.length) {
@@ -94,6 +94,7 @@ export async function checkout(driver) {
             10000
         );
         await payButton.click();
+        await driver.sleep(5000);
     } catch (error) {
         console.error("Error in Checkout function:", error);
     } finally {
