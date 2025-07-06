@@ -82,7 +82,6 @@ export async function loginShopify(driver, password) {
     await driver.wait(until.elementLocated(By.css("body")), 5000)
   } catch (error) {
     console.error("Password field not found:", error.message)
-    return
   }
 }
 

@@ -1,5 +1,4 @@
 import { By, until, Key } from "selenium-webdriver";
-import { login } from "../accounts/login.js";
 
 export async function checkout(driver) {
     try {
@@ -27,22 +26,22 @@ export async function checkout(driver) {
 
         await driver.sleep(10000);
 
-        const firstNameEls = await driver.findElements(By.id("TextField0"));
+        const firstNameEls = await driver.findElements(By.xpath("//input[@name='firstName']"));
         if (firstNameEls.length) {
             await firstNameEls[0].sendKeys("Test");
         }
 
-        const lastNameEls = await driver.findElements(By.id("TextField1"));
+        const lastNameEls = await driver.findElements(By.xpath("//input[@name='lastName']"));
         if (lastNameEls.length) {
             await lastNameEls[0].sendKeys("User");
         }
 
-        const addressEls = await driver.findElements(By.id("TextField2"));
+        const addressEls = await driver.findElements(By.xpath("//input[@name='address1']"));
         if (addressEls.length) {
             await addressEls[0].sendKeys("123 Test Street");
         }
 
-        const cityEls = await driver.findElements(By.id("TextField4"));
+        const cityEls = await driver.findElements(By.xpath("//input[@name='city']"));
         if (cityEls.length) {
             await cityEls[0].sendKeys("Test City", Key.RETURN);
         }

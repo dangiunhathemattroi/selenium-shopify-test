@@ -112,47 +112,44 @@ async function runShopifyTest() {
     //wait checkoutpage to load
     await driver.wait(until.elementLocated(By.css(".content-for-layout, .djSdi")), 10000)
     console.log("checkout page loaded")
+    await driver.sleep(10000);
 
-    await driver.sleep(5000)
+    const payButton1 = await driver.wait(until.elementLocated(By.id('checkout-pay-button')), 10000,)
+    await payButton1.click()
+    await driver.sleep(4000);
 
-    const firstNameEls = await driver.findElements(By.id('TextField0'))
+    const firstNameEls = await driver.findElements(By.xpath("//input[@name='firstName']"));
     if (firstNameEls.length) {
-      await firstNameEls[0].sendKeys('Test')
+      await firstNameEls[0].sendKeys("Test");
     }
 
-    const lastNameEls = await driver.findElements(By.id('TextField1'))
+    const lastNameEls = await driver.findElements(By.xpath("//input[@name='lastName']"));
     if (lastNameEls.length) {
-      await lastNameEls[0].sendKeys('User')
+      await lastNameEls[0].sendKeys("User");
     }
 
-    const addressEls = await driver.findElements(By.id('TextField2'))
+    const addressEls = await driver.findElements(By.xpath("//input[@name='address1']"));
     if (addressEls.length) {
-      await addressEls[0].sendKeys('123 Test Street')
+      await addressEls[0].sendKeys("123 Test Street");
     }
 
-    const cityEls = await driver.findElements(By.id('TextField4'))
+    const cityEls = await driver.findElements(By.xpath("//input[@name='city']"));
     if (cityEls.length) {
-      await cityEls[0].sendKeys('Test City', Key.RETURN)
+      await cityEls[0].sendKeys("Test City", Key.RETURN);
     }
 
     await driver.sleep(5000)
 
     console.log("process payment...")
 
-    const numberFrame = await driver.wait(
-      until.elementLocated(By.css('iframe[id^="card-fields-number"]')),
-      10000
-    )
+    const numberFrame = await driver.wait(until.elementLocated(By.css('iframe[id^="card-fields-number"]')), 10000)
     await driver.switchTo().frame(numberFrame)
     await driver.findElement(By.name('number')).sendKeys('1')
     await driver.sleep(2000);
     await driver.switchTo().defaultContent()
 
     // Expiry date
-    const expiryFrame = await driver.wait(
-      until.elementLocated(By.css('iframe[id^="card-fields-expiry"]')),
-      10000
-    )
+    const expiryFrame = await driver.wait(until.elementLocated(By.css('iframe[id^="card-fields-expiry"]')), 10000)
     await driver.switchTo().frame(expiryFrame)
     await driver.findElement(By.name('expiry')).sendKeys('12')
     await driver.sleep(2000);
@@ -175,18 +172,20 @@ async function runShopifyTest() {
     await driver.sleep(2000);
     await driver.switchTo().defaultContent()
 
-    const payButton = await driver.wait(
-      until.elementLocated(By.id('checkout-pay-button')),
-      10000,
-    )
+    const payButton = await driver.wait(until.elementLocated(By.id('checkout-pay-button')), 10000,)
     await payButton.click()
+    await driver.sleep(10000);
+
+
 
     console.log("Test completed successfully up to payment information")
+
   }
   catch (error) {
     console.error("Test failed:", error)
   } finally {
-    await driver.quit();
+    //await driver.quit();
+    console.log("Test finished, browser closed!")
   }
 }
 
