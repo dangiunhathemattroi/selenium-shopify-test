@@ -1,5 +1,5 @@
 import { By, Key, until } from "selenium-webdriver";
-export async function exceptionCheckoutCardNumber16(driver) {
+export async function exceptionCheckoutCardExpSpace(driver) {
     try {
         await driver.sleep(3000);
         const loginElements = await driver.findElements(By.css(".content-for-layout .login"));
@@ -15,11 +15,6 @@ export async function exceptionCheckoutCardNumber16(driver) {
         await driver.sleep(3000);
 
         console.log("checkout page loaded");
-
-        await driver.executeScript(
-            "arguments[0].scrollIntoView({behavior: 'smooth', block: 'center'});",
-            await driver.findElement(By.id('shippingAddressForm')),
-        );
 
         await driver.sleep(2000);
 
@@ -52,7 +47,7 @@ export async function exceptionCheckoutCardNumber16(driver) {
             10000
         );
         await driver.switchTo().frame(numberFrame);
-        await driver.findElement(By.name("number")).sendKeys("123456789123456789");
+        await driver.findElement(By.name("number")).sendKeys("1");
         await driver.sleep(2000);
         await driver.switchTo().defaultContent();
 
@@ -62,14 +57,14 @@ export async function exceptionCheckoutCardNumber16(driver) {
             10000
         );
         await driver.switchTo().frame(expiryFrame);
-        await driver.findElement(By.name("expiry")).sendKeys("12");
+        await driver.findElement(By.name("expiry")).sendKeys("  ");
         await driver.sleep(2000);
         await driver.switchTo().defaultContent();
 
         await driver.sleep(2000);
 
         await driver.switchTo().frame(expiryFrame);
-        await driver.findElement(By.name("expiry")).sendKeys("30");
+        await driver.findElement(By.name("expiry")).sendKeys("  ");
         await driver.sleep(2000);
         await driver.switchTo().defaultContent();
 
@@ -94,7 +89,7 @@ export async function exceptionCheckoutCardNumber16(driver) {
     } catch (error) {
         console.error("Error in Checkout function:", error);
     } finally {
-        console.log("Checkout Field Empty successfully");
+        console.log("Checkout exp space successfully");
         await driver.sleep(2000);
     }
 }

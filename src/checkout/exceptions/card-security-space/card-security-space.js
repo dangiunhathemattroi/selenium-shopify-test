@@ -1,0 +1,95 @@
+import { By, Key, until } from "selenium-webdriver";
+export async function exceptionCheckoutCardSecurity5Number(driver) {
+    try {
+        await driver.sleep(3000);
+        const loginElements = await driver.findElements(By.css(".content-for-layout .login"));
+        if (loginElements.length) {
+            console.log("login page loaded")
+            const sendemail = await driver.findElement(By.css("form input[name='customer[email]']"));
+            sendemail.sendKeys("ngakn64@gmail.com")
+
+            const sendpw = await driver.findElement(By.css("form input[name='customer[password]']"));
+            sendpw.sendKeys("Bss123@#", Key.RETURN)
+        }
+
+        await driver.sleep(3000);
+
+        console.log("checkout page loaded");
+
+        await driver.sleep(2000);
+
+        const firstNameEls = await driver.findElements(By.xpath("//input[@name='firstName']"));
+        if (firstNameEls.length) {
+            await firstNameEls[0].sendKeys("Test");
+        }
+
+        const lastNameEls = await driver.findElements(By.xpath("//input[@name='lastName']"));
+        if (lastNameEls.length) {
+            await lastNameEls[0].sendKeys("User");
+        }
+
+        const addressEls = await driver.findElements(By.xpath("//input[@name='address1']"));
+        if (addressEls.length) {
+            await addressEls[0].sendKeys("123 Test Street");
+        }
+
+        const cityEls = await driver.findElements(By.xpath("//input[@name='city']"));
+        if (cityEls.length) {
+            await cityEls[0].sendKeys("Test City", Key.RETURN);
+        }
+
+        await driver.sleep(5000);
+
+        console.log("process payment...");
+
+        const numberFrame = await driver.wait(
+            until.elementLocated(By.css('iframe[id^="card-fields-number"]')),
+            10000
+        );
+        await driver.switchTo().frame(numberFrame);
+        await driver.findElement(By.name("number")).sendKeys("1");
+        await driver.sleep(2000);
+        await driver.switchTo().defaultContent();
+
+        // Expiry date
+        const expiryFrame = await driver.wait(
+            until.elementLocated(By.css('iframe[id^="card-fields-expiry"]')),
+            10000
+        );
+        await driver.switchTo().frame(expiryFrame);
+        await driver.findElement(By.name("expiry")).sendKeys("12");
+        await driver.sleep(2000);
+        await driver.switchTo().defaultContent();
+
+        await driver.sleep(2000);
+
+        await driver.switchTo().frame(expiryFrame);
+        await driver.findElement(By.name("expiry")).sendKeys("30");
+        await driver.sleep(2000);
+        await driver.switchTo().defaultContent();
+
+        // CVV
+        const cvvFrame = await driver.wait(
+            until.elementLocated(
+                By.css('iframe[id^="card-fields-verification_value"]')
+            ),
+            10000
+        );
+        await driver.switchTo().frame(cvvFrame);
+        await driver.findElement(By.name("verification_value")).sendKeys("  ");
+        await driver.sleep(2000);
+        await driver.switchTo().defaultContent();
+
+        const payButton = await driver.wait(
+            until.elementLocated(By.id("checkout-pay-button")),
+            10000
+        );
+
+        await payButton.click();
+    } catch (error) {
+        console.error("Error in Checkout function:", error);
+    } finally {
+        console.log("Checkout card security space successfully");
+        await driver.sleep(2000);
+    }
+}

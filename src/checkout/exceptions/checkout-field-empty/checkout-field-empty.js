@@ -30,6 +30,6 @@ export async function exceptionCheckoutFieldEmpty(driver) {
         console.error("Error in Checkout function:", error);
     } finally {
         console.log("Checkout Field Empty successfully");
-        await driver.sleep(2000);
+        await driver.sleep(8000);
     }
 }

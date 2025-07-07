@@ -3,6 +3,9 @@ import {
   until
 } from "selenium-webdriver";
 import chrome from "selenium-webdriver/chrome.js";
+import { viewProduct } from "./src/products/view-product.js";
+import { addToCart } from "./src/products/add-to-cart.js";
+import { quantityInput } from "./src/products/quantity-input.js";
 
 async function runShopifyTest() {
   const options = new chrome.Options();
@@ -127,6 +130,35 @@ async function runShopifyTest() {
       console.log("Cart is not empty after removal");
     }
 
+    await driver.sleep(2000);
+    await driver.get("https://dtn1-theme.myshopify.com");
+    await driver.wait(until.elementLocated(By.css("body")), 3000);
+    await viewProduct(driver);
+    await addToCart(driver);
+    await driver.get("https://dtn1-theme.myshopify.com/cart");
+    await driver.wait(until.elementLocated(By.css("body")), 3000);
+    await driver.executeScript("arguments[0].value = '0';", quantityInput);
+    await driver.sleep(2000);
+    await driver.executeScript("arguments[0].value = '999';", quantityInput);
+    await driver.sleep(2000);
+    await driver.executeScript("arguments[0].value = '2000';", quantityInput);
+    await driver.sleep(2000);
+    await driver.executeScript("arguments[0].value = '1.3';", quantityInput);
+    await driver.sleep(2000);
+    await driver.executeScript("arguments[0].value = 'abc';", quantityInput);
+    await driver.sleep(2000);
+    await driver.executeScript("arguments[0].value = '  ';", quantityInput);
+    await driver.sleep(2000);
+    await driver.executeScript("arguments[0].value = '999';", quantityInput);
+    await driver.sleep(2000);
+    await buttonPlus.click();
+    await driver.sleep(2000);
+    await driver.executeScript("arguments[0].value = '1';", quantityInput);
+    await driver.sleep(2000);
+    await buttonminus.click();
+    await driver.sleep(2000);
+    await buttonminus.click();
+    await driver.sleep(2000);
   } catch (error) {
     console.error(`Error during cart verification: ${error.message}`);
   } finally {

@@ -1,7 +1,9 @@
-import { Builder, By } from "selenium-webdriver";
+import { Builder } from "selenium-webdriver";
 import chrome from "selenium-webdriver/chrome.js";
-import { loginShopify } from "../../../utils/helpers.js";
-import { history } from "./history.js";
+import { loginShopify } from "../../../../utils/helpers.js";
+import { viewProduct } from "../../../products/view-product.js";
+import { buyItNow } from "../../../products/buy-it-now.js";
+import { exceptionCheckoutCardExpVarchar } from "./card-exp-varchar.js";
 
 async function runShopifyTest() {
     const options = new chrome.Options();
@@ -16,9 +18,11 @@ async function runShopifyTest() {
 
     try {
         // Truy cập vào trang Shopify
-        driver.sleep(2000);
         await loginShopify(driver, "Bss123@#");
-        await history(driver);
+        console.log("Test case 1: Checkout successfully")
+        await viewProduct(driver);
+        await buyItNow(driver);
+        await exceptionCheckoutCardExpVarchar(driver);
     } catch (err) {
         console.log(err);
     } finally {

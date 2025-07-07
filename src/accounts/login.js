@@ -29,10 +29,6 @@ export async function login(driver, account, password) {
         console.error("Error in login function:", error);
     } finally {
         await driver.sleep(3000);
-        const homepageElements = await driver.findElements(By.css(".content-for-layout .featured-collection"));
-        if (!homepageElements.length) {
-            await driver.get('https://dtn1-theme.myshopify.com');
-        }
         console.log("Login succesfully");
     }
 }
