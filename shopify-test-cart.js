@@ -5,7 +5,6 @@ import {
 import chrome from "selenium-webdriver/chrome.js";
 import { viewProduct } from "./src/products/view-product.js";
 import { addToCart } from "./src/products/add-to-cart.js";
-import { quantityInput } from "./src/products/quantity-input.js";
 
 async function runShopifyTest() {
   const options = new chrome.Options();
@@ -137,32 +136,82 @@ async function runShopifyTest() {
     await addToCart(driver);
     await driver.get("https://dtn1-theme.myshopify.com/cart");
     await driver.wait(until.elementLocated(By.css("body")), 3000);
-    await driver.executeScript("arguments[0].value = '0';", quantityInput);
-    await driver.sleep(2000);
-    await driver.executeScript("arguments[0].value = '999';", quantityInput);
-    await driver.sleep(2000);
-    await driver.executeScript("arguments[0].value = '2000';", quantityInput);
-    await driver.sleep(2000);
-    await driver.executeScript("arguments[0].value = '1.3';", quantityInput);
-    await driver.sleep(2000);
-    await driver.executeScript("arguments[0].value = 'abc';", quantityInput);
-    await driver.sleep(2000);
-    await driver.executeScript("arguments[0].value = '  ';", quantityInput);
-    await driver.sleep(2000);
-    await driver.executeScript("arguments[0].value = '999';", quantityInput);
-    await driver.sleep(2000);
-    await buttonPlus.click();
-    await driver.sleep(2000);
-    await driver.executeScript("arguments[0].value = '1';", quantityInput);
-    await driver.sleep(2000);
-    await buttonminus.click();
-    await driver.sleep(2000);
-    await buttonminus.click();
-    await driver.sleep(2000);
+
+    const quantityInputCart = await driver.findElement(By.css("form.cart__contents .cart__items .cart-items #CartItem-1 .cart-item__quantity input.quantity__input"))
+
+    console.log("TC1: quantity = 0")
+    await driver.executeScript(`
+      arguments[0].value = '0';
+      arguments[0].dispatchEvent(new Event('change', { bubbles: true }));
+      `, quantityInputCart);
+    await driver.sleep(5000);
+
+    console.log("TC2: quantity = inventory")
+    await driver.executeScript(`
+      arguments[0].value = "974";
+      arguments[0].dispatchEvent(new Event('change', { bubbles: true }));
+      `, quantityInputCart);
+    await driver.sleep(5000);
+
+    console.log("TC3: quantity > inventory")
+    await driver.executeScript(`
+      arguments[0].value = '975';
+      arguments[0].dispatchEvent(new Event('change', { bubbles: true }));
+      `, quantityInputCart);
+    await driver.sleep(5000);
+
+    console.log("TC4: quantity = decimal or negative")
+
+    await driver.executeScript(`
+      arguments[0].value = '1.3';
+      arguments[0].dispatchEvent(new Event('change', { bubbles: true }));
+      `, quantityInputCart);
+    await driver.sleep(5000);
+
+    console.log("TC5: quantity = string")
+
+    await driver.executeScript(`
+      arguments[0].value = 'abc';
+      arguments[0].dispatchEvent(new Event('change', { bubbles: true }));
+      `, quantityInputCart);
+
+    console.log("TC6: quantity = space")
+
+    await driver.sleep(5000);
+    await driver.executeScript(`
+      arguments[0].value = ' ';
+      arguments[0].dispatchEvent(new Event('change', { bubbles: true }));
+      `, quantityInputCart);
+    await driver.sleep(5000);
+
+    console.log("TC7: quantity = inventory + click plus")
+
+    await driver.executeScript(`
+      arguments[0].value = '974';
+      arguments[0].dispatchEvent(new Event('change', { bubbles: true }));
+      `, quantityInputCart);
+    await driver.sleep(5000);
+    const buttonPlus2 = await driver.findElement(By.css('form.cart__contents .cart__items .cart-items #CartItem-1 .cart-item__quantity button[name="plus"]'));
+    await buttonPlus2.click();
+    await driver.sleep(5000);
+
+    console.log("TC8: quantity = 0 + click minius")
+
+    await driver.executeScript(`
+      arguments[0].value = '1';
+      arguments[0].dispatchEvent(new Event('change', { bubbles: true }));
+      `, quantityInputCart);
+    await driver.sleep(5000);
+    const buttonminus2 = await driver.findElement(By.css('form.cart__contents .cart__items .cart-items #CartItem-1 .cart-item__quantity button[name="minus"]'));
+    await buttonminus2.click();
+    await driver.sleep(5000);
+    await buttonminus2.click();
+    await driver.sleep(5000);
   } catch (error) {
     console.error(`Error during cart verification: ${error.message}`);
   } finally {
-    console.log("\n🏁 Test finished!");
+    await driver.quit();
+    console.log("\n Test finished!");
 
   }
 }

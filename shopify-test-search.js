@@ -18,7 +18,6 @@ async function runShopifyTest() {
     const sendpass = await driver.findElement(By.css("form #password"))
     await sendpass.sendKeys("Bss123@#", Key.RETURN)
 
-
     // Wait for the page to load completely
     await driver.wait(until.elementLocated(By.css("body")), 10000)
 

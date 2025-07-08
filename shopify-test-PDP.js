@@ -24,14 +24,13 @@ async function runShopifyTest() {
     // Test Case 1: Product details and following a product
     console.log("Test Case 1:  Viewing product details and following")
 
-    // Click on a product
     const productLink = driver.findElement(By.css('.card-wrapper.product-card-wrapper'))
     await productLink.click()
 
     console.log("PDP loaded!");
 
     await driver.sleep(5000)
-    //see product khác từ PDP
+
     await driver.executeScript("arguments[0].scrollIntoView({behavior: 'smooth', block: 'center'});", await driver.findElement(By.css('suggestion-viewed-products.suggestions-viewed-products')));
     await driver.sleep(5000);
     const product3 = await driver.findElement(By.css('.card-wrapper.product-card-wrapper'));

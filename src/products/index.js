@@ -27,7 +27,6 @@ async function runShopifyTest() {
         await viewProduct(driver);
         // //add to cart
         await addToCart(driver);
-        //see product khác từ PDP
         await driver.executeScript(
             "arguments[0].scrollIntoView({behavior: 'smooth', block: 'center'});",
             await driver.findElement(

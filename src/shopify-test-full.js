@@ -5,6 +5,7 @@ import { viewProduct } from "./products/view-product.js";
 import { buyItNow } from "./products/buy-it-now.js";
 import { checkout } from "./checkout/checkout.js";
 import { history } from "./orders/history/history.js";
+import { quantityInputForBuyItNow } from "./products/quantity-input.js";
 
 async function runShopifyTest() {
     const options = new chrome.Options();
@@ -18,10 +19,10 @@ async function runShopifyTest() {
         .build();
 
     try {
-        // Truy cập vào trang Shopify
         await loginShopify(driver, "Bss123@#");
         console.log("Test case 1: Checkout successfully")
         await viewProduct(driver);
+        await quantityInputForBuyItNow(driver, 10);
         await buyItNow(driver);
         await checkout(driver);
         await driver.sleep(2000);

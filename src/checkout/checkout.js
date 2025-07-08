@@ -6,7 +6,6 @@ export async function checkout(driver) {
         const loginElements = await driver.findElements(By.css(".content-for-layout .login"));
         if (loginElements.length) {
             console.log("login page loaded")
-            console.log("login page loaded")
             const sendemail = await driver.findElement(By.css("form input[name='customer[email]']"));
             sendemail.sendKeys("ngakn64@gmail.com")
 

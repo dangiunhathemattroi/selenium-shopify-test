@@ -9,7 +9,7 @@ export async function viewProduct(driver) {
                 By.css("featured-collection.featured-collection, suggestion-viewed-products.suggestions-viewed-products")
             ), 10000
         );
-        await driver.sleep(2000); // Wait for the page to load
+        await driver.sleep(2000);
         await driver.wait(until.elementLocated(By.css(".card-wrapper.product-card-wrapper")), 5000)
         const productEls = await driver.findElements(By.css('.card-wrapper.product-card-wrapper'))
         await productEls[0].click();
